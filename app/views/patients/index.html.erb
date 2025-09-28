@@ -1,0 +1,150 @@
+<h1>Список пациентов</h1>
+
+<div>
+  <%= link_to 'Вернуться на главную страницу', root_path %>
+  <br>
+  <%= link_to 'Добавить пациента', new_patient_path, class: 'btn btn-primary' %>
+</div>
+
+
+
+
+
+<div class="card mb-4">
+  <div class="card-header bg-light p-3">
+    <h2 class="mb-0"><i class="bi bi-filter"></i>Фильтрация</h2>
+    <small class="text-muted">Выберите интересующие вас параметры для поиска.</small>
+  </div>
+
+  <div class="card-body">
+    <%= form_tag patients_path, method: :get do %>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Фамилия</th>
+              <th>Имя</th>
+              <th>Отчество</th>
+              <th>Пол</th>
+              <th>Мин. возраст</th>
+              <th>Макс. возраст</th>
+              <th> </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <%= text_field_tag :search_last_name, params[:search_last_name], placeholder: 'Фамилия', class: 'form-control' %>
+              </td>
+              <td>
+                <%= text_field_tag :search_first_name, params[:search_first_name], placeholder: 'Имя', class: 'form-control' %>
+              </td>
+              <td>
+                <%= text_field_tag :search_middle_name, params[:search_middle_name], placeholder: 'Отчество', class: 'form-control' %>
+              </td>
+              <td>
+                <%= select_tag :search_gender, 
+                              options_for_select([['Любой', ''], ['Мужской', 'male'], ['Женский', 'female']],
+                                                 selected: params[:search_gender]),
+                              include_blank: false,
+                              class: 'form-select' %>
+              </td>
+              <td>
+                <%= number_field_tag :min_age, params[:min_age], min: 0, max: 150, step: 1, placeholder: 'Минимальный возраст', class: 'form-control' %>
+              </td>
+              <td>
+                <%= number_field_tag :max_age, params[:max_age], min: 0, max: 150, step: 1, placeholder: 'Максимальный возраст', class: 'form-control' %>
+              </td>
+              <td>
+                <%= submit_tag 'Искать', class: 'btn btn-primary w-100' %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+
+
+<br>
+
+
+
+
+
+
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>ФИО</th>
+      <th>Дата рождения</th>
+      <th>Рост</th>
+      <th>Вес</th>
+      <th>Пол</th>
+      <th>Врачи</th>
+      <th>Создан</th>
+      <th>Изменен</th>
+      <th>Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @patients.each  do |patient| %>
+      <tr>
+        <td><%= patient.id %></td>
+        <td><%= "#{patient.last_name} #{patient.first_name} #{patient.middle_name}" %></td>
+        <td><%= patient.date_of_birth.try(:strftime, "%d.%m.%Y") %></td>
+        <td><%= patient.height %></td>
+        <td><%= patient.weight %></td>
+        <td><%= patient.gender == 'male' ? 'Мужской' : 'Женский' %></td>
+        <td align="center">
+          <% if patient.doctors.any? %>
+            <ul style="list-style-type:none; padding-left:0; margin-top:0;">
+              <% patient.doctors.each do |doctor| %>
+                <li><%= doctor.full_name %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            —
+          <% end %>
+        </td>
+        <td><%= patient.created_at.try(:strftime, '%d.%m.%Y %H:%M') %></td>
+        <td><%= patient.updated_at.try(:strftime, '%d.%m.%Y %H:%M') %></td>
+        <td>
+          <%= link_to 'Посмотреть', patient_path(patient), class: 'btn btn-info me-2' %>
+        </td>
+        <td>
+          <%= link_to 'Изменить', edit_patient_path(patient), class: 'btn btn-warning' %>
+        </td>
+        <td>
+          <%= link_to 'Удалить', patient, 
+            data: 
+            { 
+              turbo_method: :delete, 
+              turbo_confirm: "Вы уверены, что хотите удалить пациента №#{patient.id}: #{patient.full_name} (#{patient.date_of_birth.strftime("%d.%m.%Y")})?"
+            }, 
+            class: 'btn btn-sm btn-danger' 
+          %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+  <!-- Переход назад -->
+  <%= link_to('< Предыдущая страница', patients_path(session[:search_params].merge(offset: @prev_offset, limit: @limit)), class: 'btn btn-outline-dark') unless @prev_offset >= @total_count %>
+
+  <!-- Текущая страница -->
+  Страница <%= ((@offset / @limit.to_f).ceil + 1) %> из <%= (@total_count / @limit.to_f).ceil %>
+
+  <!-- Переход вперед -->
+  <%= link_to('Следующая страница>', patients_path(session[:search_params].merge(offset: @next_offset, limit: @limit)), class: 'btn btn-outline-dark') if @next_offset < @total_count %>
+</nav>

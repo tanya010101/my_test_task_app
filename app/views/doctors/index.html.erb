@@ -1,0 +1,61 @@
+<h1>Список врачей</h1>
+
+<div>
+  <%= link_to 'Вернуться на главную страницу', root_path %>
+  <br>
+  <%= link_to 'Добавить врача', new_doctor_path, class: 'btn btn-primary' %>
+</div>
+
+
+
+
+
+<div>
+<table class="table">
+  <thead>
+    <tr>
+ 
+      <th>ID</th>
+      <th>ФИО</th>
+      <th>Действия</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @doctors.each do |doctor| %>
+      <tr>
+        <td><%= doctor.id %></td>
+        <td><%= "#{doctor.last_name} #{doctor.first_name} #{doctor.middle_name}" %></td>
+        <td>
+          <%= link_to 'Посмотреть', doctor_path(doctor), class: 'btn btn-info me-2' %>
+        </td>
+        <td>
+          <%= link_to 'Изменить', edit_doctor_path(doctor), class: 'btn btn-warning' %>
+        </td>
+        <td>
+          <%= link_to 'Удалить', doctor, 
+              data: 
+              { 
+                turbo_method: :delete, 
+                turbo_confirm: "Вы уверены, что хотите удалить врача №#{doctor.id}: #{doctor.full_name}?"
+              }, 
+              class: 'btn btn-sm btn-danger' 
+            %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+
+<br>
+
+<nav aria-label="Page navigation">
+  <!-- Переход назад -->
+  <%= link_to('< Предыдущая', doctors_path(offset: @prev_offset, limit: @limit), class: 'btn btn-outline-dark') unless @prev_offset >= @total_count %>
+
+  <!-- Текущая страница -->
+  Страница <%= ((@offset / @limit.to_f).ceil + 1) %> из <%= (@total_count / @limit.to_f).ceil %>
+
+  <!-- Переход вперед -->
+  <%= link_to('Следующая >', doctors_path(offset: @next_offset, limit: @limit), class: 'btn btn-outline-dark') if @next_offset < @total_count %>
+</nav>

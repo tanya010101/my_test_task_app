@@ -1,0 +1,32 @@
+<h1>Информация о враче</h1>
+
+<div>
+  <%= link_to 'Изменить', edit_doctor_path(@doctor), class: 'btn btn-warning mr-2' %>
+  <%= link_to 'Удалить', @doctor, 
+      data: 
+      { 
+        turbo_method: :delete, 
+        turbo_confirm: "Вы уверены, что хотите удалить врача №#{@doctor.id}: #{@doctor.full_name}?" 
+      }, 
+      class: 'btn btn-danger'
+    %>
+</div>
+
+<div>
+  <strong>ФИО:</strong> <%= "#{@doctor.last_name} #{@doctor.first_name} #{@doctor.middle_name}" %><br>
+
+  <% if @doctor.patients.any? %>
+    <strong>Пациенты:</strong>
+    <ul>
+      <% @doctor.patients.each do |patient| %>
+        <li><%= patient.full_name %></li>
+      <% end %>
+    </ul>
+  <% else %>
+    <strong>Пациенты:</strong> нет
+  <% end %>
+</div>
+
+<p>
+  <%= link_to 'Вернуться к списку врачей', doctors_path, class: 'btn btn-link' %>
+</p>

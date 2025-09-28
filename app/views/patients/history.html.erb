@@ -1,0 +1,49 @@
+<h1>История расчетов BMR пациента №<%= @patient.id %></h1>
+<%= link_to 'Вернуться к пациенту', patient_path(@patient) %>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>№</th>
+      <th>Формула</th>
+      <th>Результат</th>
+      <th>Дата расчета</th>
+      <th>Время расчета</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @history_entries.each do |entry| %>
+      <tr>
+        <td><%= entry.id %></td>
+       <td>
+        <% if entry.formula_used == 'mifflin_sant_geora' %>
+            Миффлина – Сан Жеора
+        <% elsif entry.formula_used == 'harris_benedict' %>
+            Харриса–Бенедикта
+        <% end %>
+        </td>
+        <td><%= entry.result_value %></td>
+        <td><%= entry.calculate_at.strftime('%d.%m.%Y') %></td>
+        <td><%= entry.calculate_at.strftime('%H:%M:%S') %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% if @total_count > @limit %> <!-- Если записей больше лимита, показываем навигацию -->
+  <nav aria-label="Page navigation example">
+    <div class="d-flex justify-content-between align-items-center">
+      <% if @has_prev_page %>
+        <a class="btn btn-outline-primary" href="<%= url_for(params.permit(:limit, :offset).merge(limit: @limit, offset: @prev_offset)) %>">Предыдущая страница</a>
+      <% else %>
+        <span class="disabled-text">Предыдущая страница</span>
+      <% end %>
+
+      <% if @has_next_page %>
+        <a class="btn btn-outline-primary ms-auto" href="<%= url_for(params.permit(:limit, :offset).merge(limit: @limit, offset: @next_offset)) %>">Следующая страница</a>
+      <% else %>
+        <span class="disabled-text ms-auto">Следующая страница</span>
+      <% end %>
+    </div>
+  </nav>
+<% end %>

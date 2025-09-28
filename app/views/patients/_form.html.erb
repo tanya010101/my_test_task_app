@@ -1,0 +1,119 @@
+<div>
+  <p>
+    <%= link_to 'Вернуться обратно к списку пациентов', patients_path, class: 'btn btn-link' %>
+  </p>
+  
+  <%= form_with(model: @patient, local: true) do |f| %>
+    <% if @patient.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@patient.errors.count, "ошибка") %> помешали сохранить пациента:</h2>
+        <ul>
+          <% @patient.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+
+  <div class="field">
+    <%= f.label :last_name, "Фамилия:" %>
+    <%= f.text_field :last_name, required: true, pattern: '[а-яА-ЯЁё\s]+', title: 'Только русские буквы' %>
+  </div>
+
+  <div class="field">
+    <%= f.label :first_name, "Имя:" %>
+    <%= f.text_field :first_name, required: true, pattern: '[а-яА-ЯЁё\s]+', title: 'Только русские буквы' %>
+  </div>
+
+  <div class="field">
+    <%= f.label :middle_name, "Отчество:" %>
+    <%= f.text_field :middle_name, pattern: '[а-яА-ЯЁё\s]*', title: 'Только русские буквы' %>
+  </div>
+
+  <div class="field">
+    <%= f.label :date_of_birth, "Дата рождения:" %>
+    <input type="date" name="patient[date_of_birth]" value="<%= @patient.date_of_birth ? l(@patient.date_of_birth, format: '%Y-%m-%d') : '' %>"
+         min="1900-01-01" max="<%= Date.today.strftime('%Y-%m-%d') %>" required />
+  </div>
+
+  <div class="field">
+    <%= f.label :height, "Рост (см):" %>
+    <input type="number" name="patient[height]" value="<%= @patient.height %>" step="0.1" min="0" required />
+  </div>
+
+  <div class="field">
+    <%= f.label :weight, "Вес (кг):" %>
+    <input type="number" name="patient[weight]" value="<%= @patient.weight %>" step="0.1" min="0" required />
+  </div>
+
+  <div class="field">
+    <%= f.label :gender, "Пол:" %>
+    <%= f.radio_button :gender, "male", checked: @patient.gender == "male", required: true %> Мужской
+    <%= f.radio_button :gender, "female", checked: @patient.gender == "female" %> Женский
+  </div>
+
+  <div class="field">
+    <%= f.label :doctor_ids, "Привязанные врачи:" %>
+    <div class="choices-container">
+      <%= f.select :doctor_ids, [], {}, multiple: true, class: "choices-js", include_hidden: false %>
+    </div>
+</div>
+  
+
+  <div class="actions">
+    <%= f.submit "Сохранить" %>
+  </div>
+  <% end %>
+
+  <script>
+    document.addEventListener('turbo:load', function() {
+      var container = document.querySelector('.choices-container'); // Эта функция addEventListener для того, чтобы заново формировать новое поле с врачами
+      if (!container) return; 
+
+      var oldSelect = container.querySelector('.choices-js');
+      if (oldSelect) {
+        oldSelect.parentNode.removeChild(oldSelect);
+      }
+
+      container.innerHTML = '';
+
+      var newSelect = document.createElement('select');
+      newSelect.classList.add('choices-js');
+      newSelect.name = 'patient[doctor_ids][]';
+      newSelect.multiple = true;
+
+      <%- Doctor.all.each do |doctor| %>
+        var option = document.createElement('option');
+        option.value = "<%= doctor.id %>";
+        option.text = "<%= doctor.full_name %>";
+        newSelect.appendChild(option);
+      <% end %>
+
+      container.appendChild(newSelect);
+
+      window.choicesInstance = new Choices(newSelect, {
+        searchEnabled: true,
+        shouldSortValues: false,
+        itemSelectText: '',
+        removeItemButton: true
+      });
+
+      // Отметка выбранных врачей
+      var selectedDoctorIds = <%= raw @patient.doctor_ids.to_json %>;
+      if (selectedDoctorIds.length > 0) {
+        window.choicesInstance.setChoiceByValue(selectedDoctorIds.map(String));
+      }
+    });
+    </script>
+
+  <script>
+  document.querySelectorAll('input[type=number][step="0.1"]').forEach(input => {
+  input.addEventListener('input', function(event) {
+    event.target.value = event.target.value.replace(',', '.'); // автоматическая замена ',' на '.'
+  });
+  });
+  </script>
+
+
+</div>

@@ -1,0 +1,27 @@
+<div>
+  <p>
+    <%= link_to 'Вернуться обратно к списку врачей', doctors_path, class: 'btn btn-link' %>
+  </p>
+
+  <%= form_with(model: doctor, local: true) do |form| %>
+
+   <div class="field">
+    <%= form.label :last_name, "Фамилия:" %>
+    <%= form.text_field :last_name, required: true, pattern: '[а-яА-ЯЁё\s]+', title: 'Только русские буквы' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :first_name, "Имя:" %>
+    <%= form.text_field :first_name, required: true, pattern: '[а-яА-ЯЁё\s]+', title: 'Только русские буквы' %>
+  </div>
+
+  <div class="field">
+    <%= form.label :middle_name, "Отчество:" %>
+    <%= form.text_field :middle_name, pattern: '[а-яА-ЯЁё\s]*', title: 'Только русские буквы' %>
+  </div>
+
+    <div class="actions">
+      <%= form.submit 'Сохранить', class: 'btn btn-success' %>
+    </div>
+  <% end %>
+</div>
