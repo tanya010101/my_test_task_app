@@ -1,24 +1,27 @@
-# README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+<h1 align="center">Backend-приложение на Ruby on Rails для управления пациентами с возможностью расчета BMR и BMI, а также фильтрации и пагинации списка пациентов.</h1>
+На главной странице есть кнопки, для перехода на страницы списка врачей и пациентов.
+<h3 align="center">Врачи:</h3>
+Параметры пагинации: limit, offset.  Реализована возможность настраивать отображение с использованием этих параметров, по умолчанию ограничивая страницу пятью врачами.
+<h3 align="center">Пациенты:</h3>
+Параметры пагинации: limit, offset (по умолчанию пять пациентов). Доступны фильтры по ФИО, гендеру и диапазону возраста. При создании или редактировании пациента можно указать лечащего врача. Сразу после создания на странице автоматически рассчитывается его BMI с помощью внешнего API. Также доступен расчет BMR, который добавляется в историю пациента.
+<h3 align="center">База данных:</h3>
+Содержит 4 сущности: Пациенты, Врачи, таблица отношений Врачей и Пациентов (для реализации отношений многие-ко-многим), История BMR.
+<h3 align="center">Докер:</h3>
+Команда: docker-compose -f docker-compose.yml up -d
+<pre>
+<code>
+#####Пример .env#####
+# Имя пользователя базы данных
+DB_USERNAME=имя_пользователя
+# Пароль пользователя базы данных
+DB_PASSWORD=пароль
+# Хост базы данных
+DB_HOST=db
+# Порт базы данных
+DB_PORT=порт
+# Имя базы данных
+DB_NAME=название_development
+DB_NAME_TEST=название_test
+DB_NAME_PRODUCTION=название_production
+</code>
+</pre>
