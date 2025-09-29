@@ -139,12 +139,29 @@
 </table>
 
 <nav aria-label="Page navigation">
-  <!-- Переход назад -->
-  <%= link_to('< Предыдущая страница', patients_path(session[:search_params].merge(offset: @prev_offset, limit: @limit)), class: 'btn btn-outline-dark') unless @prev_offset >= @total_count %>
+  <%= link_to('< Предыдущая страница',
+           patients_path(
+               search_last_name: params[:search_last_name],
+               search_first_name: params[:search_first_name],
+               search_middle_name: params[:search_middle_name],
+               search_gender: params[:search_gender],
+               min_age: params[:min_age],
+               max_age: params[:max_age],
+               offset: @prev_offset,
+               limit: @limit),
+           class: 'btn btn-outline-dark') unless @prev_offset >= @total_count %>
 
-  <!-- Текущая страница -->
   Страница <%= ((@offset / @limit.to_f).ceil + 1) %> из <%= (@total_count / @limit.to_f).ceil %>
 
-  <!-- Переход вперед -->
-  <%= link_to('Следующая страница>', patients_path(session[:search_params].merge(offset: @next_offset, limit: @limit)), class: 'btn btn-outline-dark') if @next_offset < @total_count %>
+  <%= link_to('Следующая страница >',
+            patients_path(
+                search_last_name: params[:search_last_name],
+                search_first_name: params[:search_first_name],
+                search_middle_name: params[:search_middle_name],
+                search_gender: params[:search_gender],
+                min_age: params[:min_age],
+                max_age: params[:max_age],
+                offset: @next_offset,
+                limit: @limit),
+            class: 'btn btn-outline-dark') if @next_offset < @total_count %>
 </nav>

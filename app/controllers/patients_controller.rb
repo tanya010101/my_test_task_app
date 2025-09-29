@@ -62,7 +62,7 @@ class PatientsController < ApplicationController
     end
 
     # Шаг 2: Проверка врачей
-    selected_doctor_ids = params[:patient][:doctor_ids].reject(&:blank?).map(&:to_i)
+    selected_doctor_ids = params.dig(:patient, :doctor_ids)&.reject(&:blank?)&.map(&:to_i) || []
     invalid_doctors = selected_doctor_ids.reject { |id| Doctor.exists?(id: id) }
 
     if invalid_doctors.any?

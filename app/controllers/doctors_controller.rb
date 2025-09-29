@@ -2,7 +2,7 @@ class DoctorsController < ApplicationController
 before_action :set_doctor, only: [:show, :edit, :update, :destroy]
 
   def index
-    default_limit = 10
+    default_limit = 5
     @limit = params[:limit].presence&.to_i || default_limit
     @offset = params[:offset].to_i || 0
 
